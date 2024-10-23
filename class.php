@@ -214,30 +214,32 @@
 		
 		/* Loan Function */
 		
-		public function save_loan($borrower,$ltype,$lplan,$loan_amount,$purpose, $date_created){
-			$ref_no = mt_rand(1,99999999);
+		public function save_loan($borrower, $ltype, $lplan, $loan_amount, $purpose, $date_created, $status = 0) {
+			$ref_no = mt_rand(1, 99999999);
 			
-			$i=1;
+			$i = 1;
 			
-			while($i==1){
-				$query=$this->conn->prepare("SELECT * FROM `loan` WHERE `ref_no` ='$ref_no' ") or die($this->conn->error);
-				
-				$check=$query->num_rows;
-				if($check > 0){
-					$ref_no = mt_rand(1,99999999);
-				}else{
-					$i=0;
+			while ($i == 1) {
+				$query = $this->conn->prepare("SELECT * FROM `loan` WHERE `ref_no` = ?") or die($this->conn->error);
+				$query->bind_param("i", $ref_no);
+				$query->execute();
+				$result = $query->get_result();
+				$check = $result->num_rows;
+		
+				if ($check > 0) {
+					$ref_no = mt_rand(1, 99999999);
+				} else {
+					$i = 0;
 				}
-				
 			}
-			
-			$query=$this->conn->prepare("INSERT INTO `loan` (`ref_no`, `ltype_id`, `borrower_id`, `purpose`, `amount`, `lplan_id`, `date_created`) VALUES(?, ?, ?, ?, ?, ?, ?)") or die($this->conn->error);
-			$query->bind_param("siisiis", $ref_no, $ltype, $borrower, $purpose, $loan_amount, $lplan, $date_created);
-			
-			if($query->execute()){
-				$query->close();
-				$this->conn->close();
-				return true;
+		
+			$query = $this->conn->prepare("INSERT INTO `loan` (`ref_no`, `ltype_id`, `borrower_id`, `purpose`, `amount`, `lplan_id`, `date_created`, `status`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)") or die($this->conn->error);
+			$query->bind_param("siisiisi", $ref_no, $ltype, $borrower, $purpose, $loan_amount, $lplan, $date_created, $status);
+		
+			if ($query->execute()) {
+				// Success logic here
+			} else {
+				// Error handling here
 			}
 		}
 		
