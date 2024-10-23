@@ -313,7 +313,6 @@
 			
 			if($query->execute()){
 				$query->close();
-				$this->conn->close();
 				return true;
 			}
 		}
